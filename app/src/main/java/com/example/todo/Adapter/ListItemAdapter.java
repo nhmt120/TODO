@@ -1,9 +1,10 @@
 package com.example.todo.Adapter;
 
-import android.view.ContextMenu;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,21 +16,21 @@ import com.example.todo.R;
 
 import java.util.List;
 
-class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
+class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
     ItemClickListener itemClickListener;
-    TextView item_title, item_note;
+    TextView item_title, item_note, item_radio;
 
     public ListItemViewHolder(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
-        itemView.setOnCreateContextMenuListener(this);
 
         item_title = (TextView) itemView.findViewById(R.id.item_title);
         item_note = (TextView) itemView.findViewById(R.id.item_note);
+        item_radio = (RadioButton) itemView.findViewById(R.id.item_radio);
 
-        //15:40 youtube
     }
+
 
     public void setItemClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
@@ -39,18 +40,12 @@ class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClick
     public void onClick(View v) {
         itemClickListener.onClick(v, getAdapterPosition(), false);
     }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        menu.setHeaderTitle("Select the action");
-        menu.add(0, 0, getAdapterPosition(), "DELETE");
-
-    }
 }
 
 public class ListItemAdapter extends RecyclerView.Adapter<ListItemViewHolder> {
 
     MainActivity mainActivity;
+    Context context;
     List<TODO> todoList;
 
     public ListItemAdapter(MainActivity mainActivity, List<TODO> todoList) {
@@ -67,12 +62,20 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ListItemViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull ListItemViewHolder holder, final int position) {
 
         // set data for items
         holder.item_title.setText(todoList.get(position).getTitle());
         holder.item_note.setText(todoList.get(position).getNote());
+
+        holder.item_radio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mainActivity instanceof MainActivity){
+                    ((MainActivity)mainActivity).deleteItem(position);
+                }
+            }
+        });
 
         holder.setItemClickListener(new ItemClickListener() {
             @Override
@@ -91,4 +94,6 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemViewHolder> {
     public int getItemCount() {
         return todoList.size();
     }
+
+
 }

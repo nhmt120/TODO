@@ -7,9 +7,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.example.todo.Adapter.ListItemAdapter;
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton fab;
 
+    RadioButton rad;
+
     public MaterialEditText title, note;
     public boolean isUpdate = false; // flag to check is update
     public String idUpdate = ""; // id of item need to update
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         title = (MaterialEditText) findViewById(R.id.title);
         note = (MaterialEditText) findViewById(R.id.note);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        rad = (RadioButton) findViewById(R.id.item_radio);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +80,15 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     updateData(title.getText().toString(), note.getText().toString());
                     isUpdate = !isUpdate; // reset flag
+
+                    // Hide input keyboard after updated
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        title.setShowSoftInputOnFocus(false);
+                    }
                 }
+                title.requestFocus();
+                title.setText("");
+                note.setText("");
             }
         });
 
@@ -85,14 +100,7 @@ public class MainActivity extends AppCompatActivity {
         loadData(); // Load data from Firestore
     }
 
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        if (item.getTitle().equals("DELETE"))
-            deleteItem(item.getOrder());
-        return super.onContextItemSelected(item);
-    }
-
-    private void deleteItem(int index) {
+    public void deleteItem(int index) {
         db.collection("TODO").document(todoList.get(index).getId())
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -123,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setData(String title, String note) {
-        // Random ID
-        String id = UUID.randomUUID().toString();
+        // Add new data
+        String id = UUID.randomUUID().toString(); // Random ID
         Map<String, Object> todo = new HashMap<>();
         todo.put("id", id);
         todo.put("title", title);
@@ -136,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
         public void onSuccess(Void aVoid) {
             //Refresh data
             loadData();
+            Toast.makeText(MainActivity.this, "New task added", Toast.LENGTH_SHORT).show();
+
         }
     });
     }
@@ -168,4 +178,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 }
