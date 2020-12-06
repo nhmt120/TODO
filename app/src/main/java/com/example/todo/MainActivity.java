@@ -2,16 +2,13 @@ package com.example.todo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -152,9 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadData() {
         dialog.show();
-        if (todoList.size() > 0) {
-            todoList.clear(); // Remove old value
-        }
+        todoList.clear(); // Remove old values
         db.collection("TODO")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
