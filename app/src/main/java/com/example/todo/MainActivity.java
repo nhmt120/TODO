@@ -148,8 +148,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        dialog.show();
         todoList.clear(); // Remove old values
+        dialog.show();
         db.collection("TODO")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -173,6 +173,4 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
 }
